@@ -259,14 +259,13 @@ class BaseTooltip extends Tooltip {
       case 'instagram': {
         const valueBoolean = Boolean(value);
         if(!valueBoolean) break;
-        const url = value.match(/(?:https?):\/\/(?:www\.)?instagram\.com\/p\/(\w+)\/?/);
+        const url = value.match(/(?:https?):\/\/(?:www\.)?instagram\.com\/p\/([\w-]+)\/?/);
         if (url) {
-          const html = value.match(/^(?:<blockquote)(?:.*)(?:<\/blockquote>)/);
-          const newValue = [url[1], html[0]];
-          value = newValue;
+          value = url[1];
           const range = this.quill.getSelection(true);
           this.quill.insertEmbed(range.index + 1, 'instagram', value, Emitter.sources.USER);
-          this.quill.setSelection(range.index + 2, Emitter.sources.SILENT);
+          this.quill.insertText(range.index + 2, '\n', Emitter.sources.USER);
+          this.quill.setSelection(range.index + 3, Emitter.sources.SILENT);
         }
         break;
       }

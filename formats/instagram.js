@@ -3,10 +3,9 @@ import {BlockEmbed} from '../blots/block';
 const {warn} = console;
 
 class Instagram extends BlockEmbed {
-  static create(match) {
-    const [id, html] = match;
+  static create(id) {
     const node = super.create();
-    Object.assign(node.dataset, {id, html});
+    Object.assign(node.dataset, {id});
 
     if (typeof instgrm === 'undefined') {
       warn('There is no Instagram Library. Add it!');
@@ -15,17 +14,21 @@ class Instagram extends BlockEmbed {
       node.insertAdjacentHTML('beforeend', ' (Aquí se desplegará)]');
       node.setAttribute('style', 'text-align:center;');
     } else {
-      node.insertAdjacentHTML('afterbegin', html);
-      // eslint-disable-next-line
-      instgrm.Embeds.process();
+      fetch(`https://api.instagram.com/oembed?omitscript=true&url=http://instagr.am/p/${id}/`)
+      .then((r) => r.json())
+      .then(({html}) => {
+        node.insertAdjacentHTML('afterbegin', html);
+        // eslint-disable-next-line
+        instgrm.Embeds.process();
+        return node;
+      })
     }
-
     return node;
   }
 
   static value(domNode) {
-    const {id, html} = domNode.dataset;
-    return [id, html];
+    const {id} = domNode.dataset;
+    return id;
   }
 }
 
